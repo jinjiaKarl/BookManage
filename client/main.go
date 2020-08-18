@@ -8,6 +8,7 @@ import (
 	"flag"
 	"fmt"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"io"
 	"io/ioutil"
 	"log"
@@ -70,7 +71,13 @@ func flagInit()  {
 func main()  {
 	flagInit()
 
-	conn, err := grpc.Dial(ADDRESS,grpc.WithInsecure())
+	creds, err := credentials.NewClientTLSFromFile("../certs/server.pem", "go-grpc-example")
+	if err != nil {
+		log.Println("Failed to create TLS credentials %v", err)
+	}
+
+
+	conn, err := grpc.Dial(ADDRESS,grpc.WithTransportCredentials(creds))
 	if err != nil{
 		log.Fatalf("grpc.Dial err: %v", err)
 	}

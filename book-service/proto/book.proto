@@ -3,6 +3,7 @@ package proto;
 
 import "google/protobuf/timestamp.proto";
 //import "google/protobuf/wrappers.proto"; //google.protobuf.BoolValue
+import "google/api/annotations.proto";
 
 //图书信息
 message BookInfo{
@@ -73,15 +74,35 @@ message SubscribeBookRequest{
 
 service BookService{
     //增加图书
-    rpc AddBook(AddBookRequest) returns (AddBookResponse) {};
+    rpc AddBook(AddBookRequest) returns (AddBookResponse) {
+         option (google.api.http) = {
+                   post: "/addbook"
+                   body: "*"
+               };
+    };
     //检索图书
-    rpc RetrieveBook(RetrieveBookRequest) returns (RetrieveBookResponse) {};
+    rpc RetrieveBook(RetrieveBookRequest) returns (RetrieveBookResponse) {
+        option (google.api.http) ={
+                get: "/retrievebook/{book_name_retrieve}"
+           //     body: "*"
+            };
+        };
     //图书删除
-    rpc DeleteBook(DeleteBookRequest) returns (DeleteBookResponse) {};
+    rpc DeleteBook(DeleteBookRequest) returns (DeleteBookResponse) {
+        option (google.api.http) = {
+            post: "/deletebook"
+            body: "*"
+        };
+    };
     //图书更新
-    rpc UpdateBook(UpdateBookRequest) returns (UpdateBookResponse) {};
-    //发布书籍
+    rpc UpdateBook(UpdateBookRequest) returns (UpdateBookResponse) {
+        option (google.api.http) = {
+            post: "/updatebook"
+            body: "*"
+        };
+    };
+    //发布
     rpc Publish(BookInfo) returns (PublishResponse) {};
-    //订阅 根据书的名字进行订阅 todo: 根据作者订阅
+    //订阅
     rpc Subscribe(SubscribeBookRequest) returns (stream BookInfo) {};
 }
