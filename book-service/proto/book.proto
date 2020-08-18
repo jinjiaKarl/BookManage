@@ -1,0 +1,87 @@
+syntax = "proto3";
+package proto;
+
+import "google/protobuf/timestamp.proto";
+//import "google/protobuf/wrappers.proto"; //google.protobuf.BoolValue
+
+//图书信息
+message BookInfo{
+    string book_name = 1;
+    string book_author = 2;
+    int32 book_number = 3; //图书的数量，允许重复添加
+    string book_publish_time = 4; //后期使用google.protobuf.Timestamp
+    string book_country = 5;
+}
+
+
+//管理员信息
+message AdminInfo{
+    int32 admin_id = 1;
+    string admin_username = 2;
+    string admin_password = 3;
+}
+//添加图书请求
+message AddBookRequest{
+    repeated BookInfo add_book_info = 1; //需要添加的图书信息，可以一次添加多个
+    AdminInfo admin_add_book_info = 2; //执行添加操作的管理员信息
+}
+//添加图书回应
+message AddBookResponse{
+    bool add_book_ok = 1; //是否添加成功
+    repeated BookInfo add_book_info_res = 2; //返回添加成功的图书信息
+}
+//检索图书请求，通过书名，作者名，出版日期查询。
+message RetrieveBookRequest{
+    string book_name_retrieve = 1;
+    string book_author_retrieve = 2;
+    string book_time_retrieve = 3; //google.protobuf.Timestamp
+    AdminInfo admin_retrieve_book_info = 4;
+}
+//检索图书回应
+message RetrieveBookResponse{
+    bool retrieve_book_ok = 1; //是否查询成功
+    repeated BookInfo book_info_res = 2 ; //成功返回图书的信息
+}
+//删除图书请求
+message DeleteBookRequest{
+    string book_name = 1;
+    bool delete_book_one = 2; //删除一个还是全部
+    AdminInfo admin_delete_book_info = 3;
+}
+//删除图书回应
+message DeleteBookResponse{
+    bool delete_book_ok = 1; //是否删除成功
+    BookInfo book_info_res = 2; //返回图书的信息
+}
+//更新图书请求 传入更新的内容
+message UpdateBookRequest{
+    BookInfo update_book_info = 1;
+    AdminInfo admin_add_book_info = 2;
+}
+//更新图书回应
+message UpdateBookResponse{
+    bool update_book_ok = 1; //是否更新成功
+}
+
+message PublishResponse{
+    bool publish_book_ok = 1; //是否发布成功
+}
+message SubscribeBookRequest{
+    string book_name = 1;
+    string book_author = 2;
+}
+
+service BookService{
+    //增加图书
+    rpc AddBook(AddBookRequest) returns (AddBookResponse) {};
+    //检索图书
+    rpc RetrieveBook(RetrieveBookRequest) returns (RetrieveBookResponse) {};
+    //图书删除
+    rpc DeleteBook(DeleteBookRequest) returns (DeleteBookResponse) {};
+    //图书更新
+    rpc UpdateBook(UpdateBookRequest) returns (UpdateBookResponse) {};
+    //发布书籍
+    rpc Publish(BookInfo) returns (PublishResponse) {};
+    //订阅 根据书的名字进行订阅 todo: 根据作者订阅
+    rpc Subscribe(SubscribeBookRequest) returns (stream BookInfo) {};
+}
